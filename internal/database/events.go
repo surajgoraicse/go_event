@@ -30,7 +30,7 @@ func (m *EventModel) Insert(event *Event) error {
 	// what is happening here
 	row := m.DB.QueryRowContext(ctx, query, event.OwnerID, event.Name, event.Description, event.Date, event.Location)
 
-	return row.Scan(&event.ID)
+	return row.Scan(&event.ID) // NOTE: what is happening here
 }
 
 func (m *EventModel) GetAll() ([]*Event, error) {
@@ -61,3 +61,25 @@ func (m *EventModel) GetAll() ([]*Event, error) {
 	return events, nil
 
 }
+
+func (m *EventModel) Get(id int) (*Event, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := "SELECT * FROM events WHERE ID = $1"
+	// var event *Event
+	event := new(Event)
+
+	err := m.DB.QueryRowContext(ctx, query, id).Scan(&event.ID, &event.OwnerID, &event.Name, &event.Description, &event.Date, &event.Location)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		} else {
+			return nil, err
+		}
+
+	}
+	return event , nil
+}
+
+
