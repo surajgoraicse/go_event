@@ -79,7 +79,30 @@ func (m *EventModel) Get(id int) (*Event, error) {
 		}
 
 	}
-	return event , nil
+	return event, nil
 }
 
+func (m *EventModel) Update(event *Event) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
+	query := "UPDATE events SET name = $1, description = $2, date = $3, location = $4 WHERE id = $5"
+
+	_, err := m.DB.ExecContext(ctx, query, event.Name, event.Description, event.Date, event.Location, event.ID)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (m *EventModel) Delete(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := "DELETE events where id = $1"
+	_, err := m.DB.ExecContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	return nil
+}
