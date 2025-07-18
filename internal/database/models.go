@@ -8,8 +8,8 @@ type Models struct {
 	Attendees AttendeesModel
 }
 
-func NewModels(db *sql.DB) Models {
-	return Models{
+func NewModels(db *sql.DB) *Models {
+	return &Models{
 		Users:     UserModel{DB: db},
 		Events:    EventModel{DB: db},
 		Attendees: AttendeesModel{DB: db},
