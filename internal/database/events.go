@@ -17,3 +17,10 @@ type Event struct {
 	Date        time.Time `json:"date" binding:"required, datetime=2006-01-02"`
 	Location    string    `json:"location" binding:"required, min=3"`
 }
+
+// NOTE: what are binding tags
+
+
+func (m *EventModel) Insert(event *Event){
+	
+}
