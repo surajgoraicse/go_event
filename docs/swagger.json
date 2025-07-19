@@ -1,0 +1,10 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Enter your bearer token in the format **Bearer \u0026lt;token\u0026gt;**",
+        "title": "Go Gin Resp API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {}
+}

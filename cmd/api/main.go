@@ -4,11 +4,21 @@ import (
 	"database/sql"
 	"log"
 
+	_ "github.com/surajgoraicse/go_event/docs"
+
+	_ "github.com/joho/godotenv/autoload"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/surajgoraicse/go_event/internal/database"
 	"github.com/surajgoraicse/go_event/internal/env"
-	_ "github.com/mattn/go-sqlite3"
-	_ "github.com/joho/godotenv/autoload"
 )
+
+// @title Go Gin Resp API
+// @version 1.0
+// @description A rest API in GO using Gin framework
+// @in header
+// @name header
+// @description Enter your bearer token in the format **Bearer &lt;token&gt;**
+
 
 type application struct {
 	port      int

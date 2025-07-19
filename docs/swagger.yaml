@@ -1,0 +1,7 @@
+info:
+  contact: {}
+  description: Enter your bearer token in the format **Bearer &lt;token&gt;**
+  title: Go Gin Resp API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
