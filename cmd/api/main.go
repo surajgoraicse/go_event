@@ -13,7 +13,7 @@ import (
 type application struct {
 	port      int
 	jwtSecret string
-	models    database.Models
+	models    *database.Models
 }
 
 func main() {
