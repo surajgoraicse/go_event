@@ -145,25 +145,61 @@ func (app *application) addAttendeeToEvent(c *gin.Context) {
 		EventID: eventID,
 	}
 	if _, err = app.models.Attendees.Insert(&attendee); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err, "message" : "error inserting into db"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err, "message": "error inserting into db"})
 		return
 	}
 	c.JSON(http.StatusCreated, attendee)
 
 }
 
-
-func (app *application) getAttendeesForEvent(c *gin.Context){
+func (app *application) getAttendeesForEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error" : err , "message" : "invalid event id passed"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err, "message": "invalid event id passed"})
 		return
 	}
-	
-	users, err :=app.models.Attendees.GetAttendeesByEvent(id)
+
+	users, err := app.models.Attendees.GetAttendeesByEvent(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error" : err , "message" : "failed to retrieve"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err, "message": "failed to retrieve"})
 		return
 	}
-	c.JSON(http.StatusOK,users)
+	c.JSON(http.StatusOK, users)
+}
+
+func (app *application) deleteAttendeeFromEvent(c *gin.Context) {
+	userID, err := strconv.Atoi(c.Param("userID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	eventID, err := strconv.Atoi(c.Param("eventID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	err = app.models.Attendees.Delete(userID, eventID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+
+}
+
+func (app *application) getEventsByAttendee(c *gin.Context) {
+	userID, err := strconv.Atoi(c.Param("userID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	events, err := app.models.Attendees.GetEventsByAttendee(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get event"})
+	}
+	c.JSON(http.StatusOK, events)
+
 }

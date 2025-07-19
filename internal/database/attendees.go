@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"time"
-
-	"github.com/pelletier/go-toml/query"
 )
 
 type AttendeesModel struct {
@@ -57,20 +55,56 @@ func (m *AttendeesModel) GetAttendeesByEvent(id int) ([]*User, error) {
 		JOIN attendees a ON u.id = a.user_id
 		where a.event_id = $1
 	`
-	rows, err := m.DB.QueryContext(ctx,query,id)
+	rows, err := m.DB.QueryContext(ctx, query, id)
 	if err != nil {
-		return nil ,err
+		return nil, err
 	}
 	defer rows.Close()
 
 	users := []*User{}
-	for rows.Next(){
-		user := &User{} 
-		err :=rows.Scan(&user.ID, &user.Name, &user.Email)
+	for rows.Next() {
+		user := &User{}
+		err := rows.Scan(&user.ID, &user.Name, &user.Email)
 		if err != nil {
 			return nil, err
 		}
 		users = append(users, user)
 	}
 	return users, nil
+}
+
+// delete attendee from event
+func (m *AttendeesModel) Delete(userID, eventID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := "DELETE FROM attendees WHERE user_id = $1 and event_id = $2"
+	return m.DB.QueryRowContext(ctx, query, userID, eventID).Scan()
+}
+
+// list all events of the user (attending)
+func (m *AttendeesModel) GetEventsByAttendee(userID int) ([]*Event, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		SELECT e.id, e.owner_id, e.name, e.description, e.date, e.location
+		FROM events e
+		JOIN attendees a ON e.id = a.event_id
+		WHERE a.user_id = $1
+	`
+	rows, err := m.DB.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	events := []*Event{}
+	defer rows.Close()
+	for rows.Next() {
+		event := &Event{}
+		if err :=rows.Scan(&event.ID, &event.OwnerID, &event.Name, &event.Description, &event.Date, &event.Location); err != nil {
+			return nil , err
+		}
+		events = append(events, event)
+	}
+	return events, nil
 }
