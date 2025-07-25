@@ -7,7 +7,7 @@ type Models struct {
 	Events    EventModel
 	Attendees AttendeesModel
 }
-
+// constructor function 
 func NewModels(db *sql.DB) *Models {
 	return &Models{
 		Users:     UserModel{DB: db},
